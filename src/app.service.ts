@@ -7,6 +7,6 @@ export class AppService {
   }
 
   pingDB(): string {
-    return 'Hello dbzao';
+    return `test ${JSON.stringify(process.env)}`;
   }
 }
