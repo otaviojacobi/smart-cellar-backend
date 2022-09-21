@@ -10,6 +10,8 @@ import { createServer, proxy, Response } from 'aws-serverless-express';
 import * as express from 'express';
 import helmet from 'helmet';
 
+global['fetch'] = require('node-fetch');
+
 async function createApp(expressApp: Express): Promise<INestApplication> {
   const app = await NestFactory.create(
     AppModule,

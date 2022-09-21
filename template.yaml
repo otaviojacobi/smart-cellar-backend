@@ -46,11 +46,22 @@ Parameters:
     Description: the db host
     Default: postgres
 
+  USERPOOLID:
+    Type: String
+    Description: the user pool id
+
+  CLIENTID:
+    Type: String
+    Description: the user pool secret
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  NestServerApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors: "'*'"
 
   # This is a Lambda function config associated with the source code: in src/main.ts
   NestServerFunction:
@@ -67,10 +78,15 @@ Resources:
           DB_HOST: !Ref DBHOST
           DB_PORT: !Ref DBPORT
           DB_NAME: !Ref DBNAME
+          COGNITO_USER_POOL_ID: !Ref USERPOOLID
+          COGNITO_CLIENT_ID: !Ref CLIENTID
+          COGNITO_REGION: sa-east-1
+
       Events:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref NestServerApi
             Path: /{all+}
             Method: ANY
       Policies:
@@ -89,7 +105,28 @@ Resources:
         - nodejs14.x
       RetentionPolicy: Retain
 
+  SmartCellarUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: SmartCellarUserPoolName
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: true
+
+  SmartCellarUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref SmartCellarUserPool
+      ClientName: SmartCellarUserPoolClientName
+      GenerateSecret: false
+
 Outputs:
   WebEndpoint:
     Description: 'API Gateway endpoint URL for Prod stage'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Value: !Sub 'https://${NestServerApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
