@@ -21,27 +21,27 @@ Globals:
     Timeout: 100
 
 Parameters:
-  DB_USER:
+  DBUSER:
     Type: String
     Description: the user database
     Default: postgres # local mode only
 
-  DB_PWD:
+  DBPWD:
     Type: String
     Description: the user password
     Default: s3cretp4ss # local mode only
 
-  DB_HOST:
+  DBHOST:
     Type: String
     Description: the db host
     Default: 127.0.0.1 # local mode only
 
-  DB_PORT:
+  DBPORT:
     Type: Number
     Description: the db port
     Default: 5432
 
-  DB_NAME:
+  DBNAME:
     Type: String
     Description: the db host
     Default: postgres
@@ -62,17 +62,20 @@ Resources:
       Description: Runs the full NestJs api.
       Environment:
         Variables:
-          DB_USER: !Ref DB_USER
-          DB_PWD: !Ref DB_PWD
-          DB_HOST: !Ref DB_HOST
-          DB_PORT: !Ref DB_PORT
-          DB_NAME: !Ref DB_NAME
+          DB_USER: !Ref DBUSER
+          DB_PWD: !Ref DBPWD
+          DB_HOST: !Ref DBHOST
+          DB_PORT: !Ref DBPORT
+          DB_NAME: !Ref DBNAME
       Events:
         Api:
           Type: Api
           Properties:
             Path: /{all+}
             Method: ANY
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AWSLambdaBasicExecutionRole
 
   # Shared layer with Lambda runtime dependencies
   RuntimeDependenciesLayer:

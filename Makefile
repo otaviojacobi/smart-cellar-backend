@@ -6,6 +6,7 @@ build-NestServerFunction:
 
 build-lambda-common:
 	npm install
+	npm i -g @nestjs/cli
 	rm -rf dist
 	nest build
 	cp -r dist "$(ARTIFACTS_DIR)/"
