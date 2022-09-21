@@ -35,3 +35,7 @@ export async function handler(event: any, context: Context): Promise<Response> {
   }
   return proxy(cachedServer, event, context, 'PROMISE').promise;
 }
+
+if (process.env.NODE_ENV === 'local') {
+  bootstrap().then((app) => app.listen(3000));
+}
