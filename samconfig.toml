@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "smart-cellar-backend"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ehvhcuwlfano"
+s3_prefix = "smart-cellar-backend"
+region = "sa-east-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
