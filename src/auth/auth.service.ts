@@ -7,6 +7,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { AuthUserDto } from './dto/auth-user.dto';
 import { AuthCodeDto } from './dto/auth-code.dto';
+import { TokenResponse } from './dto/token-response';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,19 @@ export class AuthService {
     });
   }
 
-  confirmUser({ email, code }: AuthCodeDto) {
+  registerUser({ email, password }: AuthUserDto): Promise<CognitoUser> {
+    return new Promise((resolve, reject) => {
+      return this.userPool.signUp(email, password, [], null, (err, result) => {
+        if (!result) {
+          reject(err);
+        } else {
+          resolve(result.user);
+        }
+      });
+    });
+  }
+
+  confirmUser({ email, code }: AuthCodeDto): Promise<CognitoUser> {
     const userData = {
       Username: email,
       Pool: this.userPool,
@@ -37,19 +50,7 @@ export class AuthService {
     });
   }
 
-  registerUser({ email, password }: AuthUserDto) {
-    return new Promise((resolve, reject) => {
-      return this.userPool.signUp(email, password, [], null, (err, result) => {
-        if (!result) {
-          reject(err);
-        } else {
-          resolve(result.user);
-        }
-      });
-    });
-  }
-
-  authenticateUser({ email, password }: AuthUserDto) {
+  authenticateUser({ email, password }: AuthUserDto): Promise<TokenResponse> {
     const authenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
@@ -65,13 +66,13 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       return newUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          resolve(result);
+          resolve({ token: result.getAccessToken().getJwtToken() });
         },
         onFailure: (err) => {
           reject(err);
         },
         newPasswordRequired: () => {
-          reject({ message: 'New password neded' });
+          reject({ message: 'New password needed' });
         },
       });
     });
