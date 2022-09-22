@@ -5,9 +5,11 @@ import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { CellarModule } from './cellar/cellar.module';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -23,7 +25,7 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,
     }),
     HealthModule,
-    AuthModule,
+    CellarModule,
   ],
   controllers: [AppController],
   providers: [AppService],
