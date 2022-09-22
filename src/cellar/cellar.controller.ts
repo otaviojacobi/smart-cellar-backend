@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Request,
+  ParseUUIDPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CellarService } from './cellar.service';
@@ -19,29 +21,37 @@ export class CellarController {
   constructor(private readonly cellarService: CellarService) {}
 
   @Post()
-  create(@Body() createCellarDto: CreateCellarDto) {
-    return this.cellarService.create(createCellarDto);
+  @UseGuards(AuthGuard('jwt'))
+  create(@Body() createCellarDto: CreateCellarDto, @Request() req) {
+    return this.cellarService.create(req.user.email, createCellarDto);
   }
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
   findAll(@Request() req) {
-    console.log('user', req.user);
-    return this.cellarService.findAll();
+    return this.cellarService.findAll(req.user.email);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cellarService.findOne(+id);
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
+    return this.cellarService.findOne(req.user.email, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCellarDto: UpdateCellarDto) {
-    return this.cellarService.update(+id, updateCellarDto);
+  @UseGuards(AuthGuard('jwt'))
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateCellarDto: UpdateCellarDto,
+    @Request() req,
+  ) {
+    return this.cellarService.update(req.user.email, id, updateCellarDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cellarService.remove(+id);
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(204)
+  remove(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
+    return this.cellarService.remove(req.user.email, id);
   }
 }

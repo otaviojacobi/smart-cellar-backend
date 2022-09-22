@@ -124,9 +124,9 @@ describe('AuthService', () => {
       const spy = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
       spy.mockImplementation((_, { onSuccess }) =>
         onSuccess({
-          getIdToken: jest.fn(),
+          getAccessToken: jest.fn(),
           getRefreshToken: jest.fn(),
-          getAccessToken: jest.fn().mockReturnValue({
+          getIdToken: jest.fn().mockReturnValue({
             getJwtToken: jest.fn().mockReturnValue(testToken),
           }),
           isValid: jest.fn(),

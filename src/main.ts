@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Express } from 'express';
 
@@ -9,14 +9,17 @@ import { Context } from 'aws-lambda';
 import { createServer, proxy, Response } from 'aws-serverless-express';
 import * as express from 'express';
 import helmet from 'helmet';
+import { EntityNotFoundExceptionFilter } from './filters/entity-not-found-exception.filter';
 
-global['fetch'] = require('node-fetch');
+//global['fetch'] = require('node-fetch');
 
 async function createApp(expressApp: Express): Promise<INestApplication> {
   const app = await NestFactory.create(
     AppModule,
     new ExpressAdapter(expressApp),
   );
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useGlobalFilters(new EntityNotFoundExceptionFilter());
   app.use(helmet());
   return app;
 }

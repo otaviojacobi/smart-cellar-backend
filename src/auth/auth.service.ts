@@ -66,7 +66,7 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       return newUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          resolve({ token: result.getAccessToken().getJwtToken() });
+          resolve({ token: result.getIdToken().getJwtToken() });
         },
         onFailure: (err) => {
           reject(err);
