@@ -36,3 +36,4 @@ lerna-debug.log*
 
 .aws-sam/
 .env
+.env.test
