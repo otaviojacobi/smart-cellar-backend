@@ -8,6 +8,7 @@ import { Server } from 'http';
 import { Context } from 'aws-lambda';
 import { createServer, proxy, Response } from 'aws-serverless-express';
 import * as express from 'express';
+import * as morgan from 'morgan';
 import helmet from 'helmet';
 import { EntityNotFoundExceptionFilter } from './filters/entity-not-found-exception.filter';
 
@@ -21,6 +22,12 @@ async function createApp(expressApp: Express): Promise<INestApplication> {
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalFilters(new EntityNotFoundExceptionFilter());
   app.use(helmet());
+  app.use(
+    morgan(
+      ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] - :response-time ms',
+    ),
+  );
+  app.enableCors();
   return app;
 }
 
