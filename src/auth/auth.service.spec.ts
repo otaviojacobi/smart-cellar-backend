@@ -2,9 +2,12 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { AuthConfig } from './auth.config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { TokenResponse } from './dto/token-response.dto';
 import { JwtStrategy } from './jwt.strategy';
 
 export function getMockCognitoUser(username) {
@@ -137,7 +140,11 @@ describe('AuthService', () => {
         email: 'test',
         password: 'p4ss',
       });
-      expect(result.token).toBe(testToken);
+
+      const output = plainToInstance(TokenResponse, { token: testToken });
+      const errors = await validate(output);
+      expect(result).toStrictEqual({ token: testToken });
+      expect(errors.length).toBe(0);
 
       expect(spy).toHaveBeenCalledTimes(1);
     });

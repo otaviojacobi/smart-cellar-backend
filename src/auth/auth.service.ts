@@ -7,7 +7,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { AuthUserDto } from './dto/auth-user.dto';
 import { AuthCodeDto } from './dto/auth-code.dto';
-import { TokenResponse } from './dto/token-response';
+import { TokenResponse } from './dto/token-response.dto';
 
 @Injectable()
 export class AuthService {

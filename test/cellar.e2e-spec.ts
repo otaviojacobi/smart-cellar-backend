@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('Cellar Controller (e2e)', () => {
   let app: INestApplication;
   let tokenUser1: string;
   let tokenUser2: string;
@@ -39,40 +39,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  describe('health checks', () => {
-    it('/ (GET)', () => {
-      return request(app.getHttpServer())
-        .get('/')
-        .expect(200)
-        .expect('Hello test');
-    });
-
-    it('/health (GET)', () => {
-      return request(app.getHttpServer())
-        .get('/health')
-        .expect(200)
-        .expect({
-          status: 'ok',
-          info: { google: { status: 'up' } },
-          error: {},
-          details: { google: { status: 'up' } },
-        });
-    });
-
-    it('/health/db (GET)', () => {
-      return request(app.getHttpServer())
-        .get('/health/db')
-        .expect(200)
-        .expect({
-          status: 'ok',
-          info: { database: { status: 'up' } },
-          error: {},
-          details: { database: { status: 'up' } },
-        });
-    });
-  });
-
-  describe('cellar', () => {
+  describe('Create and get cellar', () => {
     it('/cellar (GET) - Should get unhautorized without token', () => {
       return request(app.getHttpServer())
         .get('/cellar')
@@ -80,12 +47,23 @@ describe('AppController (e2e)', () => {
         .expect({ statusCode: 401, message: 'Unauthorized' });
     });
 
-    it('/cellar (GET) - Should get owned cellars', async () => {
+    it('/cellar (GET) - Should get empty owned cellars', async () => {
       return request(app.getHttpServer())
         .get('/cellar')
         .set('Authorization', `Bearer ${tokenUser1}`)
         .expect(200)
-        .expect('This action returns all cellar');
+        .expect([]);
+    });
+
+    it('/cellar (GET) - Should create one cellars', async () => {
+      return request(app.getHttpServer())
+        .post('/cellar')
+        .set('Authorization', `Bearer ${tokenUser1}`)
+        .send({
+          name: 'my-test-cellar',
+          capacity: 5,
+        })
+        .expect(201);
     });
   });
 });

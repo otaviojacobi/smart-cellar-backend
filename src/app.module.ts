@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -9,7 +7,6 @@ import { CellarModule } from './cellar/cellar.module';
 
 const getDBModule = () => {
   if (process.env.NODE_ENV === 'test') {
-    console.log('TEST ENV IS UP!');
     return TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
@@ -40,7 +37,5 @@ const getDBModule = () => {
     CellarModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
