@@ -17,7 +17,7 @@ describe('AuthController', () => {
       imports: [
         PassportModule,
         ConfigModule.forRoot({
-          envFilePath: '.env.test',
+          envFilePath: '.test.env',
         }),
       ],
       providers: [AuthConfig, AuthService, JwtStrategy],
