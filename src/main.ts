@@ -14,20 +14,23 @@ import { EntityNotFoundExceptionFilter } from './filters/entity-not-found-except
 
 //global['fetch'] = require('node-fetch');
 
-async function createApp(expressApp: Express): Promise<INestApplication> {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressApp),
-  );
+export function applyNestMiddlewares(app: INestApplication): INestApplication {
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalFilters(new EntityNotFoundExceptionFilter());
   app.use(helmet());
   app.use(
     morgan(
       ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] - :response-time ms',
+      { skip: (req, res) => process.env.NODE_ENV === 'test' },
     ),
   );
   app.enableCors();
+  return app;
+}
+
+async function createApp(expressApp: Express): Promise<INestApplication> {
+  let app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+  app = applyNestMiddlewares(app);
   return app;
 }
 

@@ -24,6 +24,9 @@ export class CellarService {
   }
 
   async update(owner: string, id: string, updateCellarDto: UpdateCellarDto) {
+    if (Object.keys(updateCellarDto).length === 0) {
+      return;
+    }
     const result = await this.cellarsRepository
       .createQueryBuilder()
       .update(updateCellarDto)
@@ -31,7 +34,6 @@ export class CellarService {
         id,
         owner,
       })
-      .returning('*')
       .execute();
 
     if (result.affected === 0) {

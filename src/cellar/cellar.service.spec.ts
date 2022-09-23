@@ -85,8 +85,6 @@ describe('CellarService', () => {
       owner: 'the-owner',
       id: 'the-id',
     });
-
-    expect(repoMock.returning.mock.calls[0][0]).toBe('*');
   });
 
   it('should return entity if updates with rows affected', async () => {
@@ -106,8 +104,6 @@ describe('CellarService', () => {
       owner: 'the-owner',
       id: 'the-id',
     });
-
-    expect(repoMock.returning.mock.calls[0][0]).toBe('*');
   });
 
   it('should throw if deletes with no change in db', () => {
